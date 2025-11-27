@@ -23,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support to simple Valkey/Redis cluster mode
 - Open Graph passthrough now reuses the configured target Host/SNI/TLS settings, so metadata fetches succeed when the upstream certificate differs from the public domain. ([1283](https://github.com/TecharoHQ/anubis/pull/1283))
 - Stabilize the CVE-2025-24369 regression test by always submitting an invalid proof instead of relying on random POW failures.
-- Add Polish locale ([#1292](https://github.com/TecharoHQ/anubis/pull/1309))
 
 ### Deprecate `report_as` in challenge configuration
 
@@ -80,6 +79,31 @@ logging:
 ```
 
 Additionally, information about [how Anubis uses each logging level](./admin/policies.mdx#log-levels) has been added to the documentation.
+
+### DNS Features
+
+- CEL expressions for:
+  - FCrDNS checks
+  - Forward DNS queries
+  - Reverse DNS queries
+  - `arpaReverseIP` to transform IPv4/6 addresses into ARPA reverse IP notation.
+  - `regexSafe` to escape regex special characters (useful for including `remoteAddress` or headers in regular expressions).
+- DNS cache and other optimizations to minimize unnecessary DNS queries.
+
+The DNS cache TTL can be changed in the bots config like this:
+```yaml
+dns_ttl:
+  forward: 600
+  reverse: 600
+```
+The default value for both forward and reverse queries is 300 seconds.
+
+The `verifyFCrDNS` CEL function has two overloads:
+- `(addr)`
+  Simply verifies that the remote side has PTR records pointing to the target address.
+- `(addr, ptrPattern)`
+  Verifies that the remote side refers to a specific domain and that this domain points to the target IP.
+
 
 ## v1.23.1: Lyse Hext - Echo 1
 
